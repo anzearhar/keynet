@@ -21,12 +21,12 @@ Design an iterative optimization algorithm
 - Distance moved (per word)
 - Distance from home row (0, 1, or 2)
 - Single finger key presses
-- Ngrams
+- Bigrams
 
-- Position weights:
-  1 2 2 2 1 1 2 2 2 1
-  2 3 4 5 1 1 5 4 3 2
-  1 2 2 2 1 1 2 2 2 1
+- Position weights:\
+  `1 2 2 2 1 _ 1 2 2 2 1`\
+  `2 3 4 5 1 _ 1 5 4 3 2`\
+  `1 2 2 2 1 _ 1 2 2 2 1`
 
 ## TODO
 
