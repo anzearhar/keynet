@@ -15,6 +15,11 @@ def bigram_probability(text:str) -> Tuple[dict[str, float], Counter[str]]:
     return {x: y/n for x, y in bigrams.items()}, bigrams
 
 
+def skip_letter_bigram_probability(text:str) -> Tuple[dict[str, float], Counter[str]]:
+    skip_bigrams = Counter([text[i]+text[i+2] for i in range(len(text)-2)])
+    n = sum(skip_bigrams.values())
+    return {x: y/n for x, y in skip_bigrams.items()}, skip_bigrams
+
 def p_matrix(chars:list[str], probabilities:dict[str, float]) -> np.ndarray:
     """
     Probability matrix
@@ -83,6 +88,7 @@ if __name__ == "__main__":
         text = text[1:-1]
     dc = distinct_chars(text=text)
     bp, bs = bigram_probability(text=text)
+    #bp, bs = skip_letter_bigram_probability(text=text)
     p = p_matrix(chars=dc, probabilities=bp)
     a = a_matrix(chars=dc, bigrams=bs)
     pi = pi_vec(a_matrix=a)
@@ -91,7 +97,7 @@ if __name__ == "__main__":
     print(np.flip(np.array(dc)[pi.argsort()]))
     print()
 
-    G = nx.from_numpy_array(p+p.T)
+    G = nx.from_numpy_array(p, create_using=nx.DiGraph)#+p.T
 
     # Split G three more times to get four sections for each hand.
     l, r = split_graph(G)
