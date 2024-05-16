@@ -1,0 +1,193 @@
+import random
+import numpy as np
+import matplotlib.pyplot as plt
+from collections import Counter
+from typing import Tuple
+
+
+class Permutation():
+    def __init__(self, permutation: np.ndarray = np.arange(30)) -> None:
+        self.permutation = permutation
+
+    def __str__(self) -> str:
+        return str(self.permutation)
+
+    def mutate(self) -> None:
+        n = len(self.permutation)
+        a = random.randint(0, n-1)
+        b = random.randint(0, n-1)
+        c = self.permutation[a]
+        self.permutation[a] = self.permutation[b]
+        self.permutation[b] = c
+
+    @staticmethod
+    def crossover(p0: "Permutation", p1: "Permutation") -> Tuple["Permutation", "Permutation"]:
+        """
+        Partially mapped crossover (PMX)
+        """
+        n = len(p0.permutation)
+        c = [random.randint(0, n-1), random.randint(0, n-1)]
+        c.sort()
+
+        def pmx(p0: "Permutation", p1: "Permutation", c0: int, c1: int) -> "Permutation":
+            pc = Permutation(permutation=np.zeros(n))
+            pc.permutation[c0:c1] = p0.permutation[c0:c1]
+            for i in np.concatenate([np.arange(0, c0), np.arange(c1, n)]):
+                m = p1.permutation[i]
+                while m in p0.permutation[c0:c1]:
+                    m = p1.permutation[np.where(p0.permutation == m)[0][0]]
+                pc.permutation[i] = m
+            return pc
+
+        return pmx(p0=p0, p1=p1, c0=c[0], c1=c[1]), pmx(p0=p1, p1=p0, c0=c[0], c1=c[1])
+
+def distinct_chars(text: str) -> list[str]:
+    return list(set(text))
+
+def bigram_probability(text: str) -> Tuple[dict[str, float], Counter[str]]:
+    bigrams = Counter([text[i:i+2] for i in range(len(text)-1)])
+    n = sum(bigrams.values())
+    return {x: y/n for x, y in bigrams.items()}, bigrams
+
+def p_matrix(chars: list[str], probabilities: dict[str, float]) -> np.ndarray:
+    """
+    Probability matrix
+    """
+    n = len(chars)
+    p = np.zeros(shape=(n, n))
+    for k, v in probabilities.items():
+        p[chars.index(k[0]), chars.index(k[1])] = v
+    return p
+
+def a_matrix(chars: list[str], bigrams: Counter[str]) -> np.ndarray:
+    """
+    Stochastic matrix (Markov transition matrix)
+    """
+    n = len(chars)
+    a = np.zeros(shape=(n, n))
+    for char in chars:
+        filtered = {k: v for k, v in bigrams.items() if k[0] == char}
+        count = sum(filtered.values())
+        for k, v in filtered.items():
+            a[chars.index(k[0]), chars.index(k[1])] = v/count
+    return a
+
+def d_matrix() -> np.ndarray:
+    """
+    Distance matrix
+    """
+    d = np.zeros(shape=(30, 30))
+    for y in range(30):
+        for x in range(30):
+            px, py = x%10, x//10
+            qx, qy = y%10, y//10
+            d[y,x] = np.sqrt((px-qx)**2 + (py-qy)**2)
+    return d/np.max(d)
+
+def preferred_position_matrix() -> np.ndarray:
+    """
+    Preferred position matrix
+    """
+    return np.diag([1, 2, 2, 2, 1, 1, 2, 2, 2, 1,
+                    2, 3, 4, 5, 1, 1, 5, 4, 3, 2,
+                    1, 2, 2, 2, 1, 1, 2, 2, 2, 1]) / 5
+
+def pi_vec(a_matrix: np.ndarray) -> np.ndarray:
+    """
+    Stationary probability vector
+    """
+    eig_val, eig_vec = np.linalg.eig(a_matrix.T)
+    pi = eig_vec[:, np.isclose(eig_val, 1, atol=1e-2)]
+    return np.real(pi/sum(pi)).T[0]
+
+def pi_matrix(a_matrix: np.ndarray) -> np.ndarray:
+    """
+    Pi matrix
+    """
+    return np.diag(pi_vec(a_matrix=a_matrix))
+
+def f_matrix() -> np.ndarray:
+    """
+    Same finger bigram matrix
+    """
+    f = np.zeros(shape=(30, 30))
+    sfb = [[1, 2, 3, 4, 4, 5, 5, 6, 7, 8],
+           [1, 2, 3, 4, 4, 5, 5, 6, 7, 8],
+           [1, 2, 3, 4, 4, 5, 5, 6, 7, 8]]
+    for y in range(30):
+        for x in range(30):
+            px, py = x%10, x//10
+            qx, qy = y%10, y//10
+            f[y,x] = sfb[py][px] == sfb[qy][qx]
+    return f
+
+def permutation_matrix(p: Permutation) -> np.ndarray:
+    """
+    Permutation matrix
+    """
+    n = len(p.permutation)
+    e = np.zeros(shape=(n, n))
+    for i, idx in enumerate(p.permutation):
+        e[int(idx),i] = 1
+    return e
+
+if __name__ == "__main__":
+    with open("./data/test.txt") as file:
+        text = file.read()
+        text = text[1:-1]
+    dc = distinct_chars(text=text)
+    dc.sort()
+    bp, bs = bigram_probability(text=text)
+    a = a_matrix(chars=dc, bigrams=bs)
+
+    P = p_matrix(chars=dc, probabilities=bp)
+    PI = pi_matrix(a_matrix=a)
+    D = d_matrix()
+    R = preferred_position_matrix()
+    F = f_matrix()
+
+    def cost(p: Permutation) -> float:
+        E = permutation_matrix(p=p)
+        w1 = 0.3 # Same finger bigram weight
+        w2 = 0.5 # Preferred position weight
+        w3 = 0.2 # Distance weight
+        return np.sum(E@P*(w1*F + w2*(E@PI)@R + w3*E@D)).astype(float)
+
+    plot_costs = []
+    population = np.array([Permutation() for _ in range(50)])
+    for _ in range(100):
+        costs = np.array([cost(p) for p in population])
+        # Sort
+        sort = np.argsort(costs)
+        costs = costs[sort]
+        population = population[sort]
+        # Cross and mutate
+        for i in range(10, 49, 2):
+            # TODO: sample with score probability from whole population
+            c = [random.randint(0, 49), random.randint(0, 49)]
+            population[i], population[i+1] = Permutation.crossover(population[c[0]], population[c[1]])
+            if random.random() > .5:
+                population[i].mutate()
+            if random.random() > .5:
+                population[i+1].mutate()
+        plot_costs.append(min(costs))
+        plt.plot(plot_costs, c="black")
+        plt.pause(.01)
+    plt.show()
+
+    E = permutation_matrix(p=Permutation())
+    fig, ax = plt.subplots(nrows=3, ncols=2)
+    ax[0,0].imshow(P)
+    # ax[0,0].imshow(-np.log(P, where=P>0))
+    ax[0,0].set_title("P")
+    ax[0,1].imshow(PI)
+    ax[0,1].set_title("PI")
+    ax[1,0].imshow(D)
+    ax[1,0].set_title("D")
+    ax[1,1].imshow(R)
+    ax[1,1].set_title("R")
+    ax[2,0].imshow(F)
+    ax[2,0].set_title("F")
+    ax[2,1].imshow(E)
+    ax[2,1].set_title("E")
+    plt.show()
