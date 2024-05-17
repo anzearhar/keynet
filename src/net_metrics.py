@@ -114,7 +114,7 @@ def construct_dataframe(G : nx.DiGraph, dc : list) -> pd.DataFrame:
     for each network analysis metric and their avarage rank. Indexes are node ids.
     """
 
-    out_deg = weighted_degree(G, dc)
+    out_deg = weighted_degree_ranking(G, dc)
     out_ev = weighted_eigenvector_centrality_ranking(G, dc)
     out_bet = weighted_betweenness_centrality_ranking(G, dc)
     out_close = weighted_closeness_centrality_ranking(G, dc)
