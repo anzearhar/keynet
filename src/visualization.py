@@ -40,12 +40,12 @@ def visualize_keyboard(keyboard_array: np.ndarray, colors_array: np.ndarray | No
 
 if __name__ == "__main__":
     # For testing
-    keyboard_array = np.array([['a','b','c','d','e','f','1'],
-                               ['g','h','i','j','k','l','2'],
-                               ['m','n','o','p','q','r','3']])
-    colors_array = np.array([['red','orange','yellow','green','blue','indigo','violet'],
-                             ['violet','red','orange','yellow','green','blue','indigo'],
-                             ['indigo','violet','red','orange','yellow','green','blue']])
+    keyboard_array = np.array([['q','w','e','r','t','z','u','i','o','p'],
+                               ['a','s','d','f','g','h','j','k','l','-'],
+                               ['y','x','c','v','b','n','m',',','.','\'']])
+    colors_array = np.array([['red','orangered','orange','yellow','greenyellow','mediumseagreen','blue','indigo','purple','mediumorchid'],
+                             ['red','orangered','orange','yellow','greenyellow','mediumseagreen','blue','indigo','purple','mediumorchid'],
+                             ['red','orangered','orange','yellow','greenyellow','mediumseagreen','blue','indigo','purple','mediumorchid']])
     # Keyboard with some colors
     visualize_keyboard(keyboard_array, colors_array)
     # Keyboard without colors
