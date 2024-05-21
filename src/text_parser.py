@@ -12,7 +12,7 @@ def parse_text(path: str) -> str:
     # , and ; in one key
     # . and : in one key
     # ' and ? in one key
-    pattern = r"[^a-zA-Z,.\-'\s]" 
+    pattern = r"[^a-zA-Z,.\-\:'\s]" 
     with open(path, 'r', encoding="utf-8") as file:
         content = file.read()
     content = re.sub(pattern, '', content)
