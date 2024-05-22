@@ -64,6 +64,24 @@
 
 #lorem(200)
 
+#let img_width = 25mm
+#figure(
+    caption: [Matrices],
+    grid(
+        columns: 3,
+        row-gutter: (1mm, 3mm, 1mm, 3mm),
+        gutter: .4mm,
+        image("./img/p.png", width: img_width),
+        image("./img/pi.png", width: img_width),
+        image("./img/d.png", width: img_width),
+        [$P$], [$pi$], [$D$],
+        image("./img/r.png", width: img_width),
+        image("./img/f.png", width: img_width),
+        image("./img/e.png", width: img_width),
+        [$R$], [$F$], [$E$]
+    )
+)
+
 == Evaluation
 
 #lorem(200)
