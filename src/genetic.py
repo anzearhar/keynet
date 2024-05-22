@@ -2,12 +2,16 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import Counter
-from typing import Tuple
+from typing import Optional, Tuple
+from text_parser import parse_text
 
 
 class Permutation():
-    def __init__(self, permutation: np.ndarray = np.arange(30)) -> None:
-        self.permutation = permutation
+    def __init__(self, permutation: Optional[np.ndarray] = None) -> None:
+        if permutation is None:
+            self.permutation = np.random.permutation(30)
+        else:
+            self.permutation = permutation
 
     def __str__(self) -> str:
         return str(self.permutation)
@@ -40,6 +44,7 @@ class Permutation():
             return pc
 
         return pmx(p0=p0, p1=p1, c0=c[0], c1=c[1]), pmx(p0=p1, p1=p0, c0=c[0], c1=c[1])
+
 
 def distinct_chars(text: str) -> list[str]:
     return list(set(text))
@@ -89,8 +94,8 @@ def preferred_position_matrix() -> np.ndarray:
     Preferred position matrix
     """
     return np.diag([1, 2, 2, 2, 1, 1, 2, 2, 2, 1,
-                    2, 3, 4, 5, 1, 1, 5, 4, 3, 2,
-                    1, 2, 2, 2, 1, 1, 2, 2, 2, 1]) / 5
+                    4, 5, 6, 7, 2, 2, 7, 6, 5, 4,
+                    1, 2, 2, 2, 1, 1, 2, 2, 2, 1]) / 7
 
 def pi_vec(a_matrix: np.ndarray) -> np.ndarray:
     """
@@ -132,9 +137,7 @@ def permutation_matrix(p: Permutation) -> np.ndarray:
     return e
 
 if __name__ == "__main__":
-    with open("./data/test.txt") as file:
-        text = file.read()
-        text = text[1:-1]
+    text = parse_text("./data/war_and_peace_by_tolstoy.txt")
     dc = distinct_chars(text=text)
     dc.sort()
     bp, bs = bigram_probability(text=text)
@@ -142,39 +145,68 @@ if __name__ == "__main__":
 
     P = p_matrix(chars=dc, probabilities=bp)
     PI = pi_matrix(a_matrix=a)
+    pi = pi_vec(a_matrix=a)
     D = d_matrix()
     R = preferred_position_matrix()
     F = f_matrix()
 
     def cost(p: Permutation) -> float:
+        w1 = 0.6 # Same finger bigram weight
+        w2 = 0.3 # Distance weight
+        w3 = 1.0 # Preferred position weight
         E = permutation_matrix(p=p)
-        w1 = 0.3 # Same finger bigram weight
-        w2 = 0.5 # Preferred position weight
-        w3 = 0.2 # Distance weight
-        return np.sum(E@P*(w1*F + w2*(E@PI)@R + w3*E@D)).astype(float)
+        s = pi[p.permutation.astype(int)]
+        return np.sum(E@P*(w1*F + w2*D) - w3*np.diag(s)*R).astype(float)
 
+    population_size = 100
+    keep_top = .1
+    only_mutate = .5
+    mutation_rate = .5
     plot_costs = []
-    population = np.array([Permutation() for _ in range(50)])
-    for _ in range(100):
+    population = np.array([Permutation() for _ in range(population_size)])
+    for x in range(100):
         costs = np.array([cost(p) for p in population])
         # Sort
         sort = np.argsort(costs)
-        costs = costs[sort]
         population = population[sort]
-        # Cross and mutate
-        for i in range(10, 49, 2):
-            # TODO: sample with score probability from whole population
-            c = [random.randint(0, 49), random.randint(0, 49)]
-            population[i], population[i+1] = Permutation.crossover(population[c[0]], population[c[1]])
-            if random.random() > .5:
-                population[i].mutate()
-            if random.random() > .5:
-                population[i+1].mutate()
-        plot_costs.append(min(costs))
+        costs = costs[sort]
+        # Selection probabilities
+        probabilities = costs[-1] - costs
+        probabilities /= sum(probabilities) + 1e-8
+        # Plot
+        plot_costs.append(cost(population[0]))
         plt.plot(plot_costs, c="black")
-        plt.pause(.01)
+        plt.pause(.005)
+        # TODO: disallow too many changes
+        # Cross and mutate
+        for i in range(int(only_mutate*population_size), 20):
+            population[i] = Permutation(np.copy(population[i-10].permutation))
+            population[i].mutate()
+        for i in range(int(only_mutate*population_size)+int(keep_top*population_size), population_size-1, 2):
+            def sample() -> Permutation:
+                r = random.random()
+                j = 0
+                while r > 0:
+                    if j == population_size:
+                        break
+                    r -= probabilities[j]
+                    j += 1
+                return population[j-1]
+            population[i], population[i+1] = Permutation.crossover(sample(), sample())
     plt.show()
 
+    sort = np.argsort(np.array([cost(p) for p in population]))
+    population = population[sort]
+    permutation = population[0].permutation
+
+    res = np.array(dc)[permutation.astype(int)]
+    print()
+    print(res[:10])
+    print(res[10:20])
+    print(res[20:])
+    print()
+
+    """
     E = permutation_matrix(p=Permutation())
     fig, ax = plt.subplots(nrows=3, ncols=2)
     ax[0,0].imshow(P)
@@ -191,3 +223,11 @@ if __name__ == "__main__":
     ax[2,1].imshow(E)
     ax[2,1].set_title("E")
     plt.show()
+
+    plt.imsave("p.png", P)
+    plt.imsave("pi.png", PI)
+    plt.imsave("d.png", D)
+    plt.imsave("r.png", R)
+    plt.imsave("f.png", F)
+    plt.imsave("e.png", E)
+    """

@@ -1,6 +1,6 @@
 #import "@preview/cetz:0.2.2"
 
-#let accent_color = cmyk(0%, 94%, 94%, 6%)
+#let accent_color = purple
 
 #set document(title: "Project report", author: "Arhar, Kostanjšek, Ločičnik", date: datetime.today())
 #set page(
@@ -59,41 +59,39 @@
 
 == Network analysis
 
-#lorem(200)
+#lorem(220)
 
 == Genetic algorithms
 
-#lorem(20)
+We define the cost function $c$ using the following matrices:
 
-- Probability matrix $P$
+- Probability matrix $P$ contains the bigram probabilities
 
 $
 P_(i,j) = p_(i,j)
 $
 
-- Markov chain transposition matrix $A$
-
-- Stationary probability vector $pi$
+- Markov chain transposition matrix $A$ of the network is used to calculate the stationary probability vector $pi$
 
 $
 pi A = pi
 $
 
-- Preferred position matrix $R$
+- Preferred position matrix $R$ is a diagonal matrix of key importances
 
 $
-R = "diag"(mat(1, 2, 2, 2, 1, 1, 2, 2, 2, 1;
-               4, 5, 6, 7, 2, 2, 7, 6, 5, 4;
-               1, 2, 2, 2, 1, 1, 2, 2, 2, 1))
+R = "diag"("vec"(mat(1, 2, 2, 2, 1, 1, 2, 2, 2, 1;
+                     4, 5, 6, 7, 2, 2, 7, 6, 5, 4;
+                     1, 2, 2, 2, 1, 1, 2, 2, 2, 1)^T))
 $
 
-- Distance matrix $D$
+- Distance matrix $D$ contains the physical distances between the keys
 
 $
 D_(i,j) = sqrt((x_i - x_j)^2 + (y_i - y_j)^2)
 $
 
-- Same finger bigram matrix $F$
+- Same finger bigram matrix $F$ groups keys assigned to the same finger
 
 $
 G = "vec"(mat(1, 2, 3, 4, 4, 5, 5, 6, 7, 8;
@@ -105,16 +103,18 @@ F_(i,j) = cases(
 )
 $
 
-- Cost $c$
+Cost $c$ is defined using a weighted sum of the permuted matrices which is finally element-wise summed into a single number
 
 $
-C(E) = E P dot.circle (w_1 F + w_2 D - w_3"diag"(E pi)R)\
+C(E) = E P dot.circle (w_1 F + w_2 D) - w_3"diag"(E pi)R\
 c = sum_i sum_j C_(i,j)
 $
 
+Using a weighted sum allows us to assign more weight to some scores and less to other. All of the aforementioned matrices are displayed in @matrices.
+
 #let img_width = 25mm
 #figure(
-    caption: [Matrices],
+    caption: [Matrices visualized],
     grid(
         columns: 3,
         row-gutter: (1mm, 3mm, 1mm, 3mm),
@@ -128,7 +128,17 @@ $
         image("./img/e.png", width: img_width),
         [$R$], [$F$], [$E$]
     )
-)
+)<matrices>
+
+Each gene in the population is represented as a permutation.
+Our goal is to find the optimal permutation of keys that minimizes the cost function $c$.
+
+In each generation we keep the 10 % of the previous population with the lowest cost.
+Next 50 % of the genes according to their cost are only mutated.
+Mutations are represented using a random swap of two elements.
+Other 40 % of genes are a recombination of all genes from the previous population.
+This is achieved using the partially mapped crossover (PMX) algorithm, which swaps parts of two permutations in a way that keeps a part of the original permutation.
+Candidates for recombination are selected according to their cost - lower cost has a higher probability of being selected and higher cost has a lower probability of being selected.
 
 == Evaluation
 

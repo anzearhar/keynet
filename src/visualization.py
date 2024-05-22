@@ -12,27 +12,27 @@ def visualize_keyboard_old_school(keyboard_array: np.ndarray, colors_array: np.n
     """
     rows, cols = keyboard_array.shape
     if colors_array is None:
-        colors_array = np.full((rows, cols), 'white', dtype=object)
+        colors_array = np.full((rows, cols), "white", dtype=object)
     _, ax = plt.subplots()
 
     for i in range(rows):
         for j in range(cols):
             color = colors_array[i,j]
-            rect = patches.Rectangle((j - 0.5, i - 0.5), 1, 1, linewidth=1, edgecolor='black', facecolor=color)
+            rect = patches.Rectangle((j - 0.5, i - 0.5), 1, 1, linewidth=1, edgecolor="black", facecolor=color)
             ax.add_patch(rect)
 
     ax.set_xticks(np.arange(cols), minor=False)
     ax.set_yticks(np.arange(rows), minor=False)
     ax.set_xticks(np.arange(-0.5, cols, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, rows, 1), minor=True)
-    ax.grid(which='minor', color='black', linestyle='-', linewidth=2)
-    ax.grid(which='major', color='none')
+    ax.grid(which="minor", color="black", linestyle="-", linewidth=2)
+    ax.grid(which="major", color="none")
     ax.tick_params(which="major", bottom=False, left=False, labelbottom=False, labelleft=False)
     for i in range(rows):
         for j in range(cols):
-            ax.text(j, i, keyboard_array[i, j], ha='center', va='center', fontsize=20)
+            ax.text(j, i, keyboard_array[i, j], ha="center", va="center", fontsize=20)
     ax.invert_yaxis()
-    ax.set_aspect('equal')
+    ax.set_aspect("equal")
     ax.set_xlim(-0.5, cols - 0.5)
     ax.set_ylim(rows - 0.5, -0.5)
     plt.show()
