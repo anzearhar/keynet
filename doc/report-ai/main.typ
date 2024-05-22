@@ -47,6 +47,7 @@
 #show heading: set text(fill: luma(120), weight: "semibold")
 #show heading: set block(above: 1.4em, below: .8em)
 #show: columns.with(2)
+#set math.mat(delim: "[")
 
 = Introduction
 
@@ -62,7 +63,54 @@
 
 == Genetic algorithms
 
-#lorem(200)
+#lorem(20)
+
+- Probability matrix $P$
+
+$
+P_(i,j) = p_(i,j)
+$
+
+- Markov chain transposition matrix $A$
+
+- Stationary probability vector $pi$
+
+$
+pi A = pi
+$
+
+- Preferred position matrix $R$
+
+$
+R = "diag"(mat(1, 2, 2, 2, 1, 1, 2, 2, 2, 1;
+               4, 5, 6, 7, 2, 2, 7, 6, 5, 4;
+               1, 2, 2, 2, 1, 1, 2, 2, 2, 1))
+$
+
+- Distance matrix $D$
+
+$
+D_(i,j) = sqrt((x_i - x_j)^2 + (y_i - y_j)^2)
+$
+
+- Same finger bigram matrix $F$
+
+$
+G = "vec"(mat(1, 2, 3, 4, 4, 5, 5, 6, 7, 8;
+              1, 2, 3, 4, 4, 5, 5, 6, 7, 8;
+              1, 2, 3, 4, 4, 5, 5, 6, 7, 8)^T)\
+F_(i,j) = cases(
+    1"," & G_i = G_j,
+    0"," & "otherwise"
+)
+$
+
+- Cost $c$
+
+$
+C(E) = E P dot.circle (w_1 F + w_2 D - w_3"diag"(E pi)R)\
+c = sum_i sum_j C_(i,j)
+$
 
 #let img_width = 25mm
 #figure(
@@ -74,7 +122,7 @@
         image("./img/p.png", width: img_width),
         image("./img/pi.png", width: img_width),
         image("./img/d.png", width: img_width),
-        [$P$], [$pi$], [$D$],
+        [$P$], [$"diag"(pi)$], [$D$],
         image("./img/r.png", width: img_width),
         image("./img/f.png", width: img_width),
         image("./img/e.png", width: img_width),

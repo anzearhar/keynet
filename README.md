@@ -2,6 +2,10 @@
 
 Introduction to network analysis 2023/24 group project
 
+## Reports
+
+[Artificial intelligence](./doc/report-ai/main.pdf)
+
 ## Theory
 
 1. Directed graph edge weights represent probability of a bigram.
