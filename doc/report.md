@@ -19,7 +19,7 @@ This paper aims to optimize keyboard layouts tailored to specific types of text,
 ## Methods Introduction
 
 In this section, we will detail the process of designing the keyboard layout.
-First, we gather text samples  (e.g. Wikipedia articles and programming code) and preprocess them by removing unnecessary symbols, spaces, line breaks, and tabs. This preprocessing results in a string composed solely of the 26 English alphabet letters and 4 additional symbols: period, comma, hyphen, and a punctuation mark. This gives us a total of 30 characters, suitable for our 3 x 10 ortholinear keyboard.
+First, we gather text samples  (e.g. Wikipedia articles and programming code) and preprocess them by removing unnecessary symbols, spaces, line breaks, and tabs. This preprocessing results in a string composed solely of the 26 English alphabet letters and 4 additional symbols: period, comma, hyphen, and a colon. This gives us a total of 30 characters, suitable for our 3 x 10 ortholinear keyboard.
 Next, we use this cleaned string to construct a graph, employing network analysis methods to establish the foundation of our keyboard layout. Finally, this foundational layout is subjected to a genetic algorithm to achieve full optimization.
 
 # Evaluation
