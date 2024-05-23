@@ -54,13 +54,13 @@ def visualize_keyboard_seaborn(keyboard_array: np.ndarray, heat: np.ndarray | No
     sns.heatmap(
         heat,
         annot=keyboard_array,
-        fmt='',
-        cmap='Blues', # 'coolwarm',
+        fmt="",
+        cmap="Blues", # "coolwarm",
         cbar=ccbar,
-        linewidths=1, 
-        linecolor='black'
+        linewidths=1,
+        linecolor="black"
     )
-    plt.axis('off')
+    plt.axis("off")
     if store:
         plt.savefig(store_name+".pdf", format="pdf", bbox_inches="tight")
     else:
@@ -69,12 +69,12 @@ def visualize_keyboard_seaborn(keyboard_array: np.ndarray, heat: np.ndarray | No
 
 if __name__ == "__main__":
     # Matplotlib
-    keyboard_array = np.array([['q','w','e','r','t','z','u','i','o','p'],
-                               ['a','s','d','f','g','h','j','k','l','-'],
-                               ['y','x','c','v','b','n','m',',','.','\'']])
-    colors_array = np.array([['red','orangered','orange','yellow','greenyellow','mediumseagreen','blue','indigo','purple','mediumorchid'],
-                             ['red','orangered','orange','yellow','greenyellow','mediumseagreen','blue','indigo','purple','mediumorchid'],
-                             ['red','orangered','orange','yellow','greenyellow','mediumseagreen','blue','indigo','purple','mediumorchid']])
+    keyboard_array = np.array([["q","w","e","r","t","z","u","i","o","p"],
+                               ["a","s","d","f","g","h","j","k","l","-"],
+                               ["y","x","c","v","b","n","m",",",".","\""]])
+    colors_array = np.array([["red","orangered","orange","yellow","greenyellow","mediumseagreen","blue","indigo","purple","mediumorchid"],
+                             ["red","orangered","orange","yellow","greenyellow","mediumseagreen","blue","indigo","purple","mediumorchid"],
+                             ["red","orangered","orange","yellow","greenyellow","mediumseagreen","blue","indigo","purple","mediumorchid"]])
     # Keyboard with some colors
     #visualize_keyboard_old_school(keyboard_array, colors_array)
     # Keyboard without colors
