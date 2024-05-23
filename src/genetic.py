@@ -6,6 +6,12 @@ from typing import Optional, Tuple
 from text_parser import parse_text
 
 
+HOMEROW = [10, 11, 12, 13, 16, 17, 18, 19]
+OTHER = [ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
+                         14, 15,
+         20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+
+
 class Permutation():
     def __init__(self, permutation: Optional[np.ndarray] = None) -> None:
         if permutation is None:
@@ -19,7 +25,10 @@ class Permutation():
     def mutate(self) -> None:
         n = len(self.permutation)
         a = random.randint(0, n-1)
-        b = random.randint(0, n-1)
+        if a in HOMEROW:
+            b = random.choice(HOMEROW)
+        else:
+            b = random.choice(OTHER)
         c = self.permutation[a]
         self.permutation[a] = self.permutation[b]
         self.permutation[b] = c
@@ -30,7 +39,12 @@ class Permutation():
         Partially mapped crossover (PMX)
         """
         n = len(p0.permutation)
-        c = [random.randint(0, n-1), random.randint(0, n-1)]
+        a = random.randint(0, n-1)
+        if a in HOMEROW:
+            b = random.choice(HOMEROW)
+        else:
+            b = random.choice(OTHER)
+        c = [a, b]
         c.sort()
 
         def pmx(p0: "Permutation", p1: "Permutation", c0: int, c1: int) -> "Permutation":
@@ -93,9 +107,9 @@ def preferred_position_matrix() -> np.ndarray:
     """
     Preferred position matrix
     """
-    return np.diag([1, 2, 2, 2, 1, 1, 2, 2, 2, 1,
-                    4, 5, 6, 7, 2, 2, 7, 6, 5, 4,
-                    1, 2, 2, 2, 1, 1, 2, 2, 2, 1]) / 7
+    return np.diag([2, 3, 4, 5, 1, 1, 5, 4, 3, 2,
+                    6, 7, 8, 9, 2, 2, 9, 8, 7, 6,
+                    2, 3, 4, 5, 1, 1, 5, 4, 3, 2]) / 9
 
 def pi_vec(a_matrix: np.ndarray) -> np.ndarray:
     """
@@ -158,12 +172,20 @@ if __name__ == "__main__":
         s = pi[p.permutation.astype(int)]
         return np.sum(E@P*(w1*F + w2*D) - w3*np.diag(s)*R).astype(float)
 
+    # TODO: import layout
+    network_layout = ["m", "g", "h", ":", ",", "q", "f", "s", "w", "b",
+                      "n", "i", "r", "e", ".", "x", "a", "o", "u", "t",
+                      "v", "p", "l", "-", "k", "y", "j", "d", "c", "z"]
+    starting_permutation = np.zeros(30)
+    for i in range(len(network_layout)):
+        starting_permutation[i] = dc.index(network_layout[i])
+
     population_size = 100
     keep_top = .1
     only_mutate = .5
     mutation_rate = .5
     plot_costs = []
-    population = np.array([Permutation() for _ in range(population_size)])
+    population = np.array([Permutation(permutation=starting_permutation) for _ in range(population_size)])
     for x in range(100):
         costs = np.array([cost(p) for p in population])
         # Sort
@@ -177,9 +199,8 @@ if __name__ == "__main__":
         plot_costs.append(cost(population[0]))
         plt.plot(plot_costs, c="black")
         plt.pause(.005)
-        # TODO: disallow too many changes
         # Cross and mutate
-        for i in range(int(only_mutate*population_size), 20):
+        for i in range(int(keep_top*population_size), int(only_mutate*population_size)):
             population[i] = Permutation(np.copy(population[i-10].permutation))
             population[i].mutate()
         for i in range(int(only_mutate*population_size)+int(keep_top*population_size), population_size-1, 2):
