@@ -63,6 +63,19 @@
 
 == Genetic algorithms
 
+As key layout optimization is a permutation problem, we decided to optimize our layout using a genetic algorithm.
+By defining the problem in this way, we can easily design a cost function that is defined only using matrix operations.
+This allows us to speed up the computations significantly, resulting in better layout designs.
+
+Each gene in the population is represented as a permutation.
+Our goal is to find the optimal permutation of keys that minimizes the cost function $c$.
+In this section, the function $"diag"$ refers to creating a diagonal matrix from a vector $v in bb(R)^n$:
+$
+"diag"(v) = D in bb(R)^(n times n), "where" D_(i,j) = cases(
+    v_i"," & i = j,
+    0"," & "otherwise"
+)
+$
 We define the cost function $c$ using the following matrices:
 
 - Probability matrix $P$ contains the bigram probabilities
@@ -80,9 +93,9 @@ $
 - Preferred position matrix $R$ is a diagonal matrix of key importances
 
 $
-R = "diag"("vec"(mat(1, 2, 2, 2, 1, 1, 2, 2, 2, 1;
-                     4, 5, 6, 7, 2, 2, 7, 6, 5, 4;
-                     1, 2, 2, 2, 1, 1, 2, 2, 2, 1)^T))
+R = "diag"("vec"(mat(2, 3, 4, 5, 1, 1, 5, 4, 3, 2;
+                     6, 7, 8, 9, 2, 2, 9, 8, 7, 6;
+                     2, 3, 4, 5, 1, 1, 5, 4, 3, 2)^T))
 $
 
 - Distance matrix $D$ contains the physical distances between the keys
@@ -94,11 +107,11 @@ $
 - Same finger bigram matrix $F$ groups keys assigned to the same finger
 
 $
-G = "vec"(mat(1, 2, 3, 4, 4, 5, 5, 6, 7, 8;
+g = "vec"(mat(1, 2, 3, 4, 4, 5, 5, 6, 7, 8;
               1, 2, 3, 4, 4, 5, 5, 6, 7, 8;
               1, 2, 3, 4, 4, 5, 5, 6, 7, 8)^T)\
 F_(i,j) = cases(
-    1"," & G_i = G_j,
+    1"," & g_i = g_j,
     0"," & "otherwise"
 )
 $
@@ -110,7 +123,8 @@ C(E) = E P dot.circle (w_1 F + w_2 D) - w_3"diag"(E pi)R\
 c = sum_i sum_j C_(i,j)
 $
 
-Using a weighted sum allows us to assign more weight to some scores and less to other. All of the aforementioned matrices are displayed in @matrices.
+Using a weighted sum allows us to assign more weight to some scores and less to other.
+All of the aforementioned matrices are displayed in @matrices.
 
 #let img_width = 25mm
 #figure(
@@ -130,15 +144,14 @@ Using a weighted sum allows us to assign more weight to some scores and less to 
     )
 )<matrices>
 
-Each gene in the population is represented as a permutation.
-Our goal is to find the optimal permutation of keys that minimizes the cost function $c$.
-
 In each generation we keep the 10 % of the previous population with the lowest cost.
 Next 50 % of the genes according to their cost are only mutated.
 Mutations are represented using a random swap of two elements.
 Other 40 % of genes are a recombination of all genes from the previous population.
 This is achieved using the partially mapped crossover (PMX) algorithm, which swaps parts of two permutations in a way that keeps a part of the original permutation.
 Candidates for recombination are selected according to their cost - lower cost has a higher probability of being selected and higher cost has a lower probability of being selected.
+The mutation and crossover procedure operate only inclusively on homerow keys or other keys.
+This limtation is added to keep similar structure to the layout designed using network analysis.
 
 == Evaluation
 
