@@ -34,4 +34,8 @@ To avoid this bias, we decided to take a different approach. We visualized each 
 
 # Discussion
 
-- because of time limitations we managed to test it only on the War and Peace novel, but we've developed a framework where we could easily test it on different types of text as well (e.g. programming code)
+Due to time limitations, we were able to test our keyboard layout optimizer only on the "War and Peace" novel. However, we have developed a flexible framework that allows for easy testing on various types of text (so the optimization of e.g. keyboard used for writing programing code would be effortlessly). This capability opens up the possibility for text-specific keyboard optimization, catering to different user needs.
+
+One limitation of our current evaluation method is that we only visualizes the heatmap based on key frequency. We does not visualize the relationships between different keys, as such a visualization would be overly complex and unclear. A potential future improvement would be to develop an unbiased method for evaluating different keyboards that takes key relationships into account without compromising clarity.
+
+Additionally, we did not have sufficient time to test the keyboards ourselves. Future work should include thorough user testing to validate the effectiveness and comfort of the optimized layouts in real-world scenarios. This will provide practical insights and further refine our optimization framework.
