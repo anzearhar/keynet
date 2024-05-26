@@ -199,7 +199,11 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='SiamFC Runner Script')
 
-    parser.add_argument("--metric", help="Choosen centrality measure.", required=True, action='store')
+    parser.add_argument("--metric", 
+                        help="Choosen centrality measure.", 
+                        required=False, 
+                        action='store', 
+                        default="Degree")
 
     args = parser.parse_args()
     metric = args.metric
@@ -223,12 +227,11 @@ if __name__ == "__main__":
     print(f"Number of letters: {len(G)}")
 
     # build keyboard layout (based on the split)
-    key_layout = full_layout(G, metric)
+    keyboard = full_layout(G, metric, dc)
 
-    # replace node ids in the keyboard layout with the correct labels (key characters)
-    labels={i: x for i, x in enumerate(dc)}
-    keyboard = place_labels(key_layout, labels)
-
-    print(keyboard)
+    print()
+    print(keyboard[:10])
+    print(keyboard[10:20])
+    print(keyboard[20:])
     # visualize keyboard
-    visualize_keyboard_seaborn(keyboard)
+    visualize_keyboard_seaborn(np.array([keyboard[:10], keyboard[10:20], keyboard[20:]]))
