@@ -42,26 +42,47 @@
 ]
 #v(3em)
 
-// #set text(font: "New Computer Modern")
+#set text(font: "New Computer Modern")
 #set heading(numbering: "1.1")
-#show heading: set text(fill: luma(120), weight: "semibold")
+// #show heading: set text(fill: luma(120), weight: "semibold")
 #show heading: set block(above: 1.4em, below: .8em)
 #show: columns.with(2)
 #set math.mat(delim: "[")
 
 = Introduction
 
-#lorem(100)
+As we know, typing speed is one of the most important quality measures for every dedicated computer science engineer.
+A significant factor influencing typing speed is the keyboard layout used.
+The most popular keyboard layouts today include QWERTY, AZERTY, Dvorak, and Colemak.
+Of these, QWERTY remains the dominant layout, despite its origins dating back to the 1870s.
+While QWERTY has been incrementally improved over time, resulting in a relatively optimal layout given its historical constraints, there is potential for entirely different layouts that could significantly enhance typing speed and comfort.
+Moreover, the optimal keyboard layout can vary depending on the specific typing task, such as coding versus writing a novel.
+The layout can also vary significantly depending on the language being typed.
+
+To address the challenge of optimizing keyboard layouts, we employed an ortholinear keyboard.
+We began by utilizing network analysis to construct a weighted directed graph, where the nodes represented keys and the links represented the frequency of successive key presses.
+With the analysis of this graph we built the foundation for our initial layout.
+Subsequently, we applied genetic algorithms to refine and optimize this layout to the greatest extent possible.
+Although we did not have sufficient time to personally become fully proficient with the new layouts, we evaluated them using other metrics, such as the distance our fingers traveled while typing various texts.
+
+This paper aims to optimize keyboard layouts tailored to specific types of text, including programming code, English language text, Slovenian language text, and more.
+Additionally, we seek to evaluate the efficiency of the layouts we developed and compare them to current popular keyboard layouts, such as QWERTY and Dvorak.
+By doing so, we hope to identify layouts that offer superior performance for specific tasks, ultimately enhancing typing speed and comfort for users.
 
 = Methods
 
-#lorem(50)
+In this section, we will detail the process of designing the keyboard layout.
+First, we gather text samples  (e.g. Wikipedia articles and programming code) and preprocess them by removing unnecessary symbols, spaces, line breaks, and tabs.
+This preprocessing results in a string composed solely of the 26 English alphabet letters and 4 additional symbols: period, comma, hyphen, and a colon.
+This gives us a total of 30 characters, suitable for our 3 x 10 ortholinear keyboard.
+Next, we use this preprocessed text to construct a graph, employing network analysis methods to establish the foundation of our keyboard layout.
+Finally, this foundational layout is subjected to a genetic algorithm to achieve full optimization.
 
 == Network analysis
 
-#lorem(220)
+#text(fill: accent_color)[TODO]
 
-== Genetic algorithms
+== Genetic algorithms <genetic>
 
 As key layout optimization is a permutation problem, we decided to optimize our layout using a genetic algorithm.
 By defining the problem in this way, we can easily design a cost function that is defined only using matrix operations.
@@ -155,14 +176,40 @@ This limtation is added to keep similar structure to the layout designed using n
 
 == Evaluation
 
-#lorem(200)
+We constructed our keyboard layouts using text from War and Peace @tolstoy_war by Leo Tolstoy.
+Evaluating the effectiveness of these keyboards presents a unique challenge.
+One potential method of evaluation involves using the cost function described in @genetic.
+However, this approach could introduce bias, as the keyboards were optimized based on this very cost function.
+
+To avoid this bias, we decided to take a different approach.
+We visualized each keyboard layout with a heatmap representing the frequency of key presses.
+By analyzing these heatmaps, we can gain insights into the distribution of key usage and provide qualitative commentary on the efficiency and comfort of the layouts.
 
 = Results
 
-#lorem(200)
+#text(fill: accent_color)[TODO]
+
+#let img_width = 95%
+#figure(
+    caption: [Keyboard layouts visualized using a heatmap],
+    grid(
+        columns: 1,
+        row-gutter: (1mm, 3mm, 1mm, 3mm),
+        gutter: .4mm,
+        image("./img/qwerty.png", width: img_width),
+        [QWERTY],
+        image("./img/dvorak.png", width: img_width),
+        [Dvorak],
+        image("./img/degree.png", width: img_width),
+        [Ours (degree centrality)],
+        image("./img/genetic.png", width: img_width),
+        [Ours (genetic algorithms)],
+    )
+)
+
 
 = Discussion
 
-#lorem(100)
+Because of time limitations we managed to test it only on the War and Peace novel, but we've developed a framework where we could easily test it on different types of text as well (e.g. programming code).
 
 #bibliography("refs.yml")

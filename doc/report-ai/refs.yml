@@ -1,0 +1,7 @@
+tolstoy_war:
+    type: Book
+    title: War and Peace
+    author: Tolstoy Leo
+    volume: 6
+    page-total: 1225
+    date: 1869

@@ -42,21 +42,37 @@ def visualize_keyboard_seaborn(keyboard_array: np.ndarray, text_path : str | Non
         heat,
         annot=keyboard_array,
         fmt="",
-        cmap="Blues", # "coolwarm",
-        cbar=ccbar,
-        linewidths=1,
-        linecolor="black"
+        cmap="viridis", # "coolwarm",
+        # cbar=ccbar,
+        cbar=False,
+        # linewidths=1,
+        # linecolor="black"
     )
     plt.axis("off")
     if store:
-        plt.savefig(store_name+".pdf", format="pdf", bbox_inches="tight")
+        # plt.savefig(store_name+".pdf", format="pdf", bbox_inches="tight")
+        plt.savefig(store_name+".png", format="png", bbox_inches="tight")
     else:
         plt.show()
 
 if __name__ == "__main__":
     # Seaborn
-    keyboard_array = np.array([["q","w","e","r","t","z","u","i","o","p"],
+
+    # qwerty
+    keyboard_array = np.array([["q","w","e","r","t","y","u","i","o","p"],
                                ["a","s","d","f","g","h","j","k","l","-"],
-                               ["y","x","c","v","b","n","m",",",".",":"]])
+                               ["z","x","c","v","b","n","m",",",".",":"]])
+    # dvorak
+    keyboard_array = np.array([["-", ",", ".", "p", "y", "f", "g", "c", "r", "l"],
+                               ["a", "o", "e", "u", "i", "d", "h", "t", "n", "s"],
+                               [":", "q", "j", "k", "x", "b", "m", "w", "v", "z"]])
+    # degree centrality
+    keyboard_array = np.array([['p','b','l','g',':','z','r','u',',','c'],
+                               ['h','i','n','e','-','j','t','a','o','s'],
+                               ['k','v','m','d','q','x','w','f','.','y']])
+    # genetic
+    keyboard_array = np.array([[',','y','g','r','q','x','c','m','u','v'],
+                               ['i','n','a','e','j','z','t','h','o','s'],
+                               ['.','p','b','d','-','k','l','w','f',':']])
     #heat = np.random.rand(*keyboard_array.shape)
-    visualize_keyboard_seaborn(keyboard_array)
+    visualize_keyboard_seaborn(keyboard_array, store=True)
