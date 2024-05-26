@@ -72,7 +72,7 @@ Subsequently, we applied genetic algorithms to refine and optimize this layout t
 Although we did not have sufficient time to personally become fully proficient with the new layouts, we evaluated them using other metrics, such as the distance our fingers traveled while typing various texts.
 
 In this section, we will detail the process of designing the keyboard layout.
-First, we gather text samples (e.g. Wikipedia articles and programming code) and preprocess them by removing unnecessary symbols, spaces, line breaks, and tabs.
+First, we gather text samples (e.g. books or programming code) and preprocess them by removing unnecessary symbols, spaces, line breaks, and tabs.
 This preprocessing results in a string composed solely of the 26 English alphabet letters and 4 additional symbols: period, comma, hyphen, and a colon.
 This gives us a total of 30 characters, suitable for our 3 x 10 ortholinear keyboard.
 Next, we use this preprocessed text to construct a graph, employing network analysis methods to establish the foundation of our keyboard layout.
@@ -80,56 +80,56 @@ Finally, this foundational layout is subjected to a genetic algorithm to achieve
 
 == Network analysis
 
-=== Node importance
-
 To build a naive baseline layout we need to evaluate node importance with the help of techniques from network analysis.
 Since what we are working with is a directed weighted (almost) fully connected graph with 30 nodes, we are very limited with the types of methods we can make use of.
-What we can use are centrality measures which generally make use of the pathways in the graph, which are in our case weighted based on bigram occurrence (normalized).
+What we can use are centrality measures, which generally make use of the pathways in the graph, that are in our case weighted based on bigram occurrence.
+
+=== Node importance
 
 The metrics used were: degree centrality, eigenvector centrality, betweenness centrality, closeness centrality and page rank.
-Of these, closeness had to be manually implemented to account for weights since the NetworkX implementation didn't.
-Betweenness, closeness and page rank also needed an additional weight change, since what they look for is the shortest path/least weighted pathways.
-In these cases the weights were recalculated like this: $1 - "edge"_{"weight"}$.
+Of these, closeness had to be manually implemented to account for weights since the NetworkX python library implementation didn't.
+Betweenness, closeness and page rank also needed an additional weight change, since what they look for is the shortest path, in our case least weighted pathways.
+In these cases the weights were recalculated using the following equation: $1 - "edge"_{"weight"}$.
 
 What we are looking for is a ranking of importance, so we added an additional metric, which combines all of these.
-We simply averaged the rank each letter gets with these metrics.
+We simply averaged the rank each symbol gets with these metrics.
 
 === Splitting the graph
 
 We obviously type with two hands so we need to split the graph into two subgraphs, one for each hand.
 We can't simply randomly split the nodes.
 We want to optimize the layout to reduce the amount of time we spend typing.
-Ideally we want bigrams to be typed interchangeably with both hands, meaning we want the sum of edge weights between the two subgraphs to be as high as possible.
+Ideally, we want bigrams to be typed interchangeably with both hands, meaning we want the sum of edge weights between the two subgraphs to be as high as possible.
 
 We can achieve this by trying to balance the sum of inner weights of the two subgraphs.
-We got an approximation of this by splitting the nodes based on the (weighted) Degree centrality.
+We got an approximation of this by splitting the nodes based on the weighted degree centrality.
 The split was made interchangeably between the two subgraphs, e.g. node with the highest degree centrality in subgraph 1, node with second highest degree centrality in subgraph 2, 3rd node in subgraph 1 again, etc.
 
 This approximation is then optimized by randomly swapping the nodes between the two subgraphs.
-If the node swap leads to an improvement in the balance we keep it, if it makes the subgraphs more unbalanced we swap back.
+If the node swap leads to an improvement in the balance, we keep it, otherwise we swap the nodes back.
 
-This optimization always converges, so that we have approx. 0.25 weights within the internal connections of each subgraphs and approx. 0.5 weights within the edges connecting the two subgraphs.
+This optimization always converges, so that we have approximately 0.25 weights within the internal connections of each subgraphs and approximately 0.5 weights within the edges connecting the two subgraphs.
 
 === Base layout
 
 Once we split the nodes on two subgraphs, we can start building the keyboard layout.
-Since we want each hand to be in charge of one half of the keyboard we can consider each half of the keyboard completely independent from the other.
+Since we want each hand to be in charge of one half of the keyboard, we can consider each half of the keyboard completely independent from the other.
 
-We start building the layout from the home (middle) row.
+We start building the layout from the home row.
 We first place the 4 most important nodes by the chosen metric (one of the centrality measures or their combined ranking) on the keys where we rest each of the fingers.
-The placing is done in order of "finger dexterity/reach": index, middle, ring and little finger.
+The placing is done in order of finger dexterity and reach: index, middle, ring and little finger.
 
 Once we fill the most important key positions, we need to fill the keys directly above and below them.
-Here we take into consideration that we want to punish using a single finger two times in a row (excluding pressing the same key twice).
-We can score each of the remaining nodes by the following score: sum of weights to the other keys on the home (middle) row minus the weight to the key directly above/below.
+Here, we take into consideration that we want to punish using a single finger two times in a row (excluding pressing the same key twice).
+We can score each of the remaining nodes by the following score: sum of weights to the other keys on the home row minus the weight to the key directly above or below.
 We place the first position of this scoring metric on the top row and the second place on the bottom row.
 We do this in the same order as placing keys on the home row, index finger first, little finger last.
 
 Finally, we are left with row next to the index finger row, which requires lateral movement from the index finger.
-Here we again score the remaining keys based on the sum of weights from the rest of the placed keys minus the sum of weights to the keys placed in the index finger row.
+Here, we again score the remaining keys based on the sum of weights from the rest of the placed keys minus the sum of weights to the keys placed in the index finger row.
 The first position is placed on the home row, the second above it and the last, least important key below it.
 
-We do this for the nodes of both subgraphs, flip one of the produced layouts and concatenate them to get the full baseline keyboard layout.
+We do this procedure for the nodes of both subgraphs, flip one of the produced layouts and concatenate them to get the full baseline keyboard layout.
 
 == Genetic algorithms <genetic>
 
@@ -148,7 +148,7 @@ $
 $
 We define the cost function $c$ using the following matrices:
 
-- Probability matrix $P$ contains the bigram probabilities
+- Probability matrix $P$ contains the bigram probabilities $p$
 
 $
 P_(i,j) = p_(i,j)
@@ -249,6 +249,7 @@ The least used symbols lie at the edges of the keyboard and at the center two ro
 #let img_width = 95%
 #figure(
     caption: [Keyboard layouts visualized using a heatmap],
+    placement: top,
     grid(
         columns: 1,
         row-gutter: (1mm, 3mm, 1mm, 3mm),
