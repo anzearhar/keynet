@@ -2,54 +2,41 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.patches as patches
 import seaborn as sns
+from text_parser import parse_text
 
+def get_heat(keyboard_array: np.ndarray, text_path : str):
+    heat = np.zeros_like(keyboard_array, dtype=float)
+    parsed_text = parse_text(text_path)
+    # create dictionary for chars and their positions in the keyboard
+    char_to_position = {}
+    for i, row in enumerate(keyboard_array):
+        for j, char in enumerate(row):
+            char_to_position[char] = (i,j)
+    # go through every char in text and increase their heat
+    for char in parsed_text:
+        if char in char_to_position:
+            pos = char_to_position[char]
+            heat[pos[0], pos[1]] += 1
+    # normalize the array
+    heat = (heat - np.min(heat)) / (np.max(heat) - np.min(heat))
+    return heat
 
-def visualize_keyboard_old_school(keyboard_array: np.ndarray, colors_array: np.ndarray | None = None):
-    """
-    Visualize the keyboard.
-    The keyboard keys should be passed as a 2D numpy array.
-    Optionally the colors_array includes the color for each key on a visualized keyboard.
-    """
-    rows, cols = keyboard_array.shape
-    if colors_array is None:
-        colors_array = np.full((rows, cols), "white", dtype=object)
-    _, ax = plt.subplots()
-
-    for i in range(rows):
-        for j in range(cols):
-            color = colors_array[i,j]
-            rect = patches.Rectangle((j - 0.5, i - 0.5), 1, 1, linewidth=1, edgecolor="black", facecolor=color)
-            ax.add_patch(rect)
-
-    ax.set_xticks(np.arange(cols), minor=False)
-    ax.set_yticks(np.arange(rows), minor=False)
-    ax.set_xticks(np.arange(-0.5, cols, 1), minor=True)
-    ax.set_yticks(np.arange(-0.5, rows, 1), minor=True)
-    ax.grid(which="minor", color="black", linestyle="-", linewidth=2)
-    ax.grid(which="major", color="none")
-    ax.tick_params(which="major", bottom=False, left=False, labelbottom=False, labelleft=False)
-    for i in range(rows):
-        for j in range(cols):
-            ax.text(j, i, keyboard_array[i, j], ha="center", va="center", fontsize=20)
-    ax.invert_yaxis()
-    ax.set_aspect("equal")
-    ax.set_xlim(-0.5, cols - 0.5)
-    ax.set_ylim(rows - 0.5, -0.5)
-    plt.show()
-
-
-def visualize_keyboard_seaborn(keyboard_array: np.ndarray, heat: np.ndarray | None = None, store = False, store_name = "keyboard_visualization"):
+def visualize_keyboard_seaborn(keyboard_array: np.ndarray, text_path : str | None = "./data/war_and_peace_by_tolstoy.txt", heat: np.ndarray | None = None, store = False, store_name = "keyboard_visualization"):
     """
     Visualize keyboard with seaborn.
     Pass the keys as keyboard_array.
-    Pass the heat values as heat array.
-    Optionally set store to True, to store the plot.
-    Optionally set store name to whatever you want the plot to be stored as.
+    Pass the path of the text as text_path (for computing the heat map, default is War and Peace).
+    (Optionally) Pass the heat values as heat array.
+    (Optionally) Set store to True, to store the plot.
+    (Optionally) Set store name to whatever you want the plot to be stored as.
     """
     ccbar = True
     if heat is None:
-        heat = np.zeros_like(keyboard_array, dtype=float)
-        ccbar = False
+        if store_name is None:
+            heat = np.zeros_like(keyboard_array, dtype=float)
+            ccbar = False
+        else:
+            heat = get_heat(keyboard_array, text_path)
     plt.figure(figsize=(10, 3)) 
     sns.heatmap(
         heat,
@@ -66,20 +53,10 @@ def visualize_keyboard_seaborn(keyboard_array: np.ndarray, heat: np.ndarray | No
     else:
         plt.show()
 
-
 if __name__ == "__main__":
-    # Matplotlib
+    # Seaborn
     keyboard_array = np.array([["q","w","e","r","t","z","u","i","o","p"],
                                ["a","s","d","f","g","h","j","k","l","-"],
-                               ["y","x","c","v","b","n","m",",",".","\""]])
-    colors_array = np.array([["red","orangered","orange","yellow","greenyellow","mediumseagreen","blue","indigo","purple","mediumorchid"],
-                             ["red","orangered","orange","yellow","greenyellow","mediumseagreen","blue","indigo","purple","mediumorchid"],
-                             ["red","orangered","orange","yellow","greenyellow","mediumseagreen","blue","indigo","purple","mediumorchid"]])
-    # Keyboard with some colors
-    #visualize_keyboard_old_school(keyboard_array, colors_array)
-    # Keyboard without colors
-    #visualize_keyboard_old_school(keyboard_array)
-
-    # Seaborn
-    heat = np.random.rand(*keyboard_array.shape)
-    visualize_keyboard_seaborn(keyboard_array, heat)
+                               ["y","x","c","v","b","n","m",",",".",":"]])
+    #heat = np.random.rand(*keyboard_array.shape)
+    visualize_keyboard_seaborn(keyboard_array)
