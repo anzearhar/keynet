@@ -24,10 +24,14 @@ Next, we use this cleaned string to construct a graph, employing network analysi
 
 # Evaluation
 
+We constructed our keyboard layouts using text from War and Peace (DODAJ CITAT) by Leo Tolstoy. Evaluating the effectiveness of these keyboards presents a unique challenge. One potential method of evaluation involves using the cost function described in Section 2.2 (Genetic Algorithms). However, this approach could introduce bias, as the keyboards were optimized based on this very cost function.
 
+To avoid this bias, we decided to take a different approach. We visualized each keyboard layout with a heatmap representing the frequency of key presses. By analyzing these heatmaps, we can gain insights into the distribution of key usage and provide qualitative commentary on the efficiency and comfort of the layouts. 
 
 # Results
 
 
 
 # Discussion
+
+- because of time limitations we managed to test it only on the War and Peace novel, but we've developed a framework where we could easily test it on different types of text as well (e.g. programming code)
