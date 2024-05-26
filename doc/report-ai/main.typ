@@ -187,7 +187,15 @@ By analyzing these heatmaps, we can gain insights into the distribution of key u
 
 = Results
 
-#text(fill: accent_color)[TODO]
+@heatmaps visualizes the heatmaps for each keyboard layout.
+As QWERTY was not designed for modern typing needs, the layout is not ergonomic and most used keys are spread across the whole keyboard.
+Dvorak tries to mitigate this by placing most frequent keys on the home row, but ignores the finger strength which is highly tied with typing ergonomics.
+
+Comparing our generated layouts to QWERTY and Dvorak, we can distinctly see the optimization profile employed in the generation process.
+Degree centrality and genetically optimized layouts feature prominent home row usage with the most used keys laying under the stronger fingers.
+The genetically optimized layout also features better bigram allocation.
+Keys that are most frequently used are positioned together, forming bigram clusters that enable fast typing speeds.
+The least used symbols lie at the edges of the keyboard and at the center two rows, as expected.
 
 #let img_width = 95%
 #figure(
@@ -205,11 +213,20 @@ By analyzing these heatmaps, we can gain insights into the distribution of key u
         image("./img/genetic.png", width: img_width),
         [Ours (genetic algorithms)],
     )
-)
-
+)<heatmaps>
 
 = Discussion
 
-Because of time limitations we managed to test it only on the War and Peace novel, but we've developed a framework where we could easily test it on different types of text as well (e.g. programming code).
+Due to time limitations, we were able to test our keyboard layout optimizer only on the War and Peace novel.
+However, we have developed a flexible framework that allows for easy testing on various types of text (so the optimization of e.g. keyboard used for writing programing code would be effortless).
+This capability opens up the possibility for text-specific keyboard optimization, catering to different user needs.
+
+One limitation of our current evaluation method is that we only visualizes the heatmap based on key frequency.
+We do not visualize the relationships between different keys, as such a visualization would be overly complex and unclear.
+A potential future improvement would be to develop an unbiased method for evaluating different keyboards that takes key relationships into account without compromising clarity.
+
+Additionally, we did not have sufficient time to test the keyboards ourselves.
+Future work should include thorough user testing to validate the effectiveness and comfort of the optimized layouts in real-world scenarios.
+This will provide practical insights and further refine our optimization framework.
 
 #bibliography("refs.yml")
