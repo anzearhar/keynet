@@ -180,7 +180,7 @@ if __name__ == "__main__":
                       "v", "p", "l", "-", "k", "y", "j", "d", "c", "z"]
     
     G = nx.from_numpy_array(P, create_using=nx.DiGraph)
-    network_layout = full_layout(G, "Degree", dc) # this metric parameter should be variable
+    network_layout = full_layout(G, "Degree", dc, pi) # this metric parameter should be variable
 
     starting_permutation = np.zeros(30)
     for i in range(len(network_layout)):

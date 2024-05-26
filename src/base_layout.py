@@ -8,6 +8,7 @@ import text_parser as tp
 import random
 from typing import Literal, TypeAlias
 import argparse
+import matplotlib.pyplot as plt
 
 Metric: TypeAlias = Literal['Average', 'Degree', 'Eigenvector', 'Betweenness', 'Closeness', 'PageRank']
 
@@ -54,6 +55,53 @@ def split_graph(G : nx.DiGraph, df: pd.DataFrame) -> tuple[list, list]:
             swap(t1, t2, r1, r2) # swap back
     
     return t1, t2 # return the nodes of each subgraph
+
+def visualize_split(G : nx.DiGraph, pi : list, dc : list, t1 : list, t2 : list):
+    color_map = []
+    for node in G:
+        if node in t1:
+            color_map.append('red')
+        elif node in t2:
+            color_map.append('blue')
+        else:
+            color_map.append('grey')
+        
+    # Get all edge weights
+    weights = np.array([d['weight'] for u, v, d in G.edges(data=True)])
+
+    # Min-max normalization
+    min_weight = weights.min()+0.001
+    max_weight = weights.max()
+    normalized_weights = (weights - min_weight) / (max_weight - min_weight)
+
+    # Create a dictionary of normalized weights for easy lookup
+    normalized_weights_dict = {(u, v): (w - min_weight) / (max_weight - min_weight) for u, v, w in G.edges(data='weight')}
+
+    # Draw the graph
+    pos = nx.circular_layout(G)  # You can use any layout you prefer
+    dt = pd.DataFrame()
+    dt['size'] = pi
+    dt['col'] = [0 if c=='red' else 1 for c in color_map]
+    dt = dt.sort_values(by=['col', 'size'])
+    #dt = dt.sort_values(by='col')
+    dt['pos'] = list(pos.values())
+    #dt.loc[dt['col']=='red', 'pos'] = list(pos.values())[15:]
+    pos = dt.sort_index()['pos'].to_dict()
+
+    plt.figure(figsize=(6, 6))
+    edges = [(u, v, (w - min_weight) / (max_weight - min_weight)) for u, v, w in G.edges(data='weight')]
+    edges.sort(key=lambda x: x[2])
+    # Draw nodes
+    nx.draw_networkx_nodes(G, pos, node_size=pi*10000, node_color=color_map, alpha=0.5)
+
+    # Draw edges with color intensity based on normalized weights
+    for (u, v, d) in edges:
+        weight = normalized_weights_dict[(u, v)]
+        nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], width=2, connectionstyle="arc3,rad=0.3", edge_color=plt.cm.Blues(weight))
+
+    # Draw labels
+    nx.draw_networkx_labels(G, pos, labels={i: x for i, x in enumerate(dc)})
+    plt.show()
 
 def check_balance(G : nx.DiGraph, t1 : list, t2 : list):
     """
@@ -168,7 +216,7 @@ def determine_key_layout(G : nx.DiGraph, subgraph_nodes : list) -> np.array:
 def place_labels(key_array, labels):
     return np.vectorize(labels.get)(key_array)
 
-def full_layout(G : nx.DiGraph, metric : Metric, dc : list) -> np.array:
+def full_layout(G : nx.DiGraph, metric : Metric, dc : list, pi : list) -> np.array:
     """
     Creates a layout for each hand (half of the keyboard) before joining them into a full keyboard layout.
     """
@@ -178,6 +226,7 @@ def full_layout(G : nx.DiGraph, metric : Metric, dc : list) -> np.array:
     
     # split the graph on 2 subgraphs (balanced by amount of weight they hold)
     t1, t2 = split_graph(G, data)
+    visualize_split(G, pi, dc, t1, t2)
 
     left = data.loc[t1]
     left = sort_by_column(left, metric)
@@ -227,7 +276,7 @@ if __name__ == "__main__":
     print(f"Number of letters: {len(G)}")
 
     # build keyboard layout (based on the split)
-    keyboard = full_layout(G, metric, dc)
+    keyboard = full_layout(G, metric, dc, pi)
 
     print()
     print(keyboard[:10])
