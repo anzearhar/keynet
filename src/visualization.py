@@ -50,8 +50,8 @@ def visualize_keyboard_seaborn(keyboard_array: np.ndarray, text_path : str | Non
     )
     plt.axis("off")
     if store:
-        # plt.savefig(store_name+".pdf", format="pdf", bbox_inches="tight")
-        plt.savefig(store_name+".png", format="png", bbox_inches="tight")
+        plt.savefig(store_name+".pdf", format="pdf", bbox_inches="tight")
+        # plt.savefig(store_name+".png", format="png", bbox_inches="tight")
     else:
         plt.show()
 

@@ -4,7 +4,8 @@ Introduction to network analysis 2023/24 group project
 
 ## Reports
 
-[Artificial intelligence](./doc/report-ai/main.pdf)
+- [Artificial intelligence](./doc/report-ai/main.pdf)
+- [Introduction to Network Analysis](./doc/report-ina/report.pdf)
 
 ## Theory
 

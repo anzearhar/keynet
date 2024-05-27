@@ -8,6 +8,7 @@ import networkx as nx
 from base_layout import full_layout
 from visualization import visualize_keyboard_seaborn
 
+
 HOMEROW = [10, 11, 12, 13, 16, 17, 18, 19]
 OTHER = [ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
                          14, 15,
@@ -174,11 +175,10 @@ if __name__ == "__main__":
         s = pi[p.permutation.astype(int)]
         return np.sum(E@P*(w1*F + w2*D) - w3*np.diag(s)*R).astype(float)
 
-    # TODO: import layout
     network_layout = ["m", "g", "h", ":", ",", "q", "f", "s", "w", "b",
                       "n", "i", "r", "e", ".", "x", "a", "o", "u", "t",
                       "v", "p", "l", "-", "k", "y", "j", "d", "c", "z"]
-    
+
     G = nx.from_numpy_array(P, create_using=nx.DiGraph)
     network_layout = full_layout(G, "Degree", dc, pi) # this metric parameter should be variable
     print(network_layout)
@@ -222,7 +222,7 @@ if __name__ == "__main__":
                 return population[j-1]
             population[i], population[i+1] = Permutation.crossover(sample(), sample())
     plt.show()
-    
+
     print(f"\nFinal cost: {plot_costs[-1]}")
     sort = np.argsort(np.array([cost(p) for p in population]))
     population = population[sort]
@@ -254,10 +254,10 @@ if __name__ == "__main__":
     ax[2,1].set_title("E")
     plt.show()
 
-    plt.imsave("p.png", P)
-    plt.imsave("pi.png", PI)
-    plt.imsave("d.png", D)
-    plt.imsave("r.png", R)
-    plt.imsave("f.png", F)
-    plt.imsave("e.png", E)
+    plt.imsave("p.pdf", P)
+    plt.imsave("pi.pdf", PI)
+    plt.imsave("d.pdf", D)
+    plt.imsave("r.pdf", R)
+    plt.imsave("f.pdf", F)
+    plt.imsave("e.pdf", E)
     """
