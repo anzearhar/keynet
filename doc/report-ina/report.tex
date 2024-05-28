@@ -58,8 +58,6 @@ Our main contribution is visualized using a key frequency heatmap in Figure \ref
 {\bf Relevant literature ($\approx 10$ references).}
 \lipsum[5-6]
 
-\nocite{Kle00,Bou05,EB07,New08,For10,New12,FH16,PLC17,PDL18,Pei20}
-
 \section*{Results}
 
 Figure \ref{fig:layouts} visualizes the key frequency heatmaps for each keyboard layout.
@@ -268,7 +266,7 @@ In each generation we keep the 10 \% of the previous population with the lowest 
 Next 50 \% of the genes according to their cost are only mutated.
 Mutations are represented using a random swap of two elements.
 Other 40 \% of genes are a recombination of all genes from the previous population.
-This is achieved using the partially mapped crossover (PMX) algorithm, which swaps parts of two permutations in a way that keeps a part of the original permutation.
+This is achieved using the partially mapped crossover (PMX) algorithm \cite{goldberg2014alleles}, which swaps parts of two permutations in a way that keeps a part of the original permutation.
 Candidates for recombination are selected according to their cost - lower cost has a higher probability of being selected and higher cost has a lower probability of being selected.
 The mutation and crossover procedure operate only inclusively on homerow keys or other keys.
 This limitation is added to keep similar structure to the layout designed using network analysis.
