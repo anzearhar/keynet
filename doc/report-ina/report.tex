@@ -36,7 +36,7 @@ Future work would focus on unbiased evaluation methods and user testing to valid
 \ifthenelse{\boolean{shortarticle}}{\ifthenelse{\boolean{singlecolumn}}{\abscontentformatted}{\abscontent}}{}
 
 \dropcap{A}s we know, typing speed is one of the most important quality measures for every dedicated computer science engineer.
-A significant factor influencing typing speed is the keyboard layout used.
+A significant factor influencing typing speed is the used keyboard layout.
 The most popular keyboard layouts today include QWERTY, AZERTY, Dvorak, and Colemak.
 Of these, QWERTY remains the dominant layout, despite its origins dating back to the 1870s.
 While QWERTY has been incrementally improved over time, resulting in a relatively optimal layout given its historical constraints, there is potential for entirely different layouts that could significantly enhance typing speed and comfort.
@@ -81,7 +81,8 @@ The genetically optimized layout also features better bigram allocation.
 Keys that are most frequently used are positioned together, forming bigram clusters that enable fast typing speeds.
 The least used symbols lie at the edges of the keyboard and at the center two rows, as expected.
 
-When comparing our layout with Dvorak and QWERTY, looking purely at the heatmap might be somewhat reasonable since what we want to achieve is the clustering of the commonly used keys, but once we compare different layouts of the same methodology, it becomes very hard to distinguish which layout is better.
+When comparing our layout with Dvorak and QWERTY, looking purely at the heatmap might be somewhat reasonable since what we want to achieve is the clustering of the commonly used keys.
+But once we compare different layouts of the same methodology, it becomes very hard to distinguish which layout is better.
 Taking this into consideration, we decided to evaluate our layouts on an online keyboard layout analyzer \href{https://klanext.keyboard-design.com/#/main}{KLAnext v0.06}.
 The optimal layout score is based on a weighed calculation that factors in the distance your fingers moved (40 \%), same finger bigrams (40 \%) and hand alternation (20 \%) while typing.
 Lower scores are better and mean that less effort will be used during typing.
@@ -114,7 +115,7 @@ The best performing layout was the one that averaged the node importance rank fr
 All of our layouts beat the QWERTY layout, with PageRank being a clear outlier and the worst performer.
 
 We can split the methods into 3 groups: metrics related to node degrees (degree and eigenvector centrality), metrics related to graph pathways (betweenness and closeness centrality) and hybrid metrics, that make we can say are related to both node degrees and graph pathways (PageRank).
-We expected the first group to perform better, since its directly related to how we split the nodes into two subgraphs and how we placed the less important keys on the layout.
+We expected the first group to perform better, since it's directly related to how we split the nodes into two subgraphs and how we placed the less important keys on the layout.
 We were unsure about how the second group would perform since looking at pathways in a fully connected graph seems meaningless, but it worked out fine since the edges are weighted.
 PageRank's bad performance was expected, since the structure of our network is very different than what the PageRank algorithm was designed for (sparse, scale-free, web-like graphs).
 
@@ -148,7 +149,7 @@ PageRank's bad performance was expected, since the structure of our network is v
 
 The other layout that performed poorly is the one that was designed with a genetic algorithm.
 We think that the main reason for that is that we didn't include enough constraints.
-If we look at it's scores, it performed well on distance, but performed poorly on same finger and same hand metrics.
+If we look at its scores, it performed well on distance, but performed poorly on same finger and same hand metrics.
 We constricted the key swaps only to rows, so that it wouldn't fully ruin the base layout provided with network analysis metrics.
 If we also constricted it to half the keyboard, the same hand score would be much better.
 The same finger scoring was included into the algorithms cost function, so that only needs to be further refined using importance weights.
@@ -164,7 +165,7 @@ Due to time limitations, we were able to test our keyboard layout optimizer only
 However, we have developed a flexible framework that allows for easy testing on various types of text (so the optimization of e.g. keyboard used for writing programming code would be effortless).
 This capability opens up the possibility for text-specific keyboard optimization, catering to different user needs.
 
-One limitation of our current evaluation method is that we only visualizes the heatmap based on key frequency.
+One limitation of our current evaluation method is that we only visualize the heatmap based on key frequency.
 We do not visualize the relationships between different keys, as such a visualization would be overly complex and unclear.
 A potential future improvement would be to develop an unbiased method for evaluating different keyboards that takes key relationships into account without compromising clarity.
 
@@ -177,7 +178,7 @@ This will provide practical insights and further refine our optimization framewo
 \section*{Methods}
 
 To address the challenge of optimizing keyboard layouts, we employed an ortholinear keyboard.
-We began by utilizing network analysis to construct a weighted directed graph, where the nodes represented keys and the links represented the frequency of successive key presses.
+We began by utilizing network analysis to construct a weighted directed graph, where the nodes represent keys and the links represent the frequency of successive key presses.
 With the analysis of this graph we built the foundation for our initial layout.
 Subsequently, we applied genetic algorithms to refine and optimize this layout to the greatest extent possible.
 Although we did not have sufficient time to personally become fully proficient with the new layouts, we evaluated them using other metrics, such as the distance our fingers traveled while typing various texts.
@@ -207,8 +208,8 @@ We simply averaged the rank each symbol gets with these metrics.
 
 \subsubsection*{Splitting the graph}
 
-We obviously type with two hands so we need to split the graph into two subgraphs, one for each hand.
-We can't simply randomly split the nodes.
+Since we type with two hands, we need to split the graph into two subgraphs, one for each hand.
+We can't just randomly split the nodes.
 We want to optimize the layout to reduce the amount of time we spend typing.
 Ideally, we want bigrams to be typed interchangeably with both hands, meaning we want the sum of edge weights between the two subgraphs to be as high as possible.
 
@@ -219,7 +220,7 @@ This approximation is then optimized by randomly swapping the nodes between the 
 If the node swap leads to an improvement in the balance, we keep it, otherwise we swap the nodes back.
 
 This optimization always converges, so that we have approximately a quarter of the weights within the internal connections of each subgraphs and approximately half of the weights within the edges connecting the two subgraphs.
-The visualization of the graph and its balanced bisection are shown in Figure \ref{fig:network}.
+The visualization of the graph and its balanced bisection is shown in Figure \ref{fig:network}.
 This graph split was also used to design layouts displayed in Figure \ref{fig:layouts}.
 
 \begin{figure}[h]\centering%
@@ -332,7 +333,7 @@ Next 50 \% of the genes according to their cost are only mutated.
 Mutations are represented using a random swap of two elements.
 Other 40 \% of genes are a recombination of all genes from the previous population.
 This is achieved using the partially mapped crossover (PMX) algorithm \cite{goldberg2014alleles}, which swaps parts of two permutations in a way that keeps a part of the original permutation.
-Candidates for recombination are selected according to their cost - lower cost has a higher probability of being selected and higher cost has a lower probability of being selected.
+Candidates for recombination are selected according to their cost -- lower cost has a higher probability of being selected and higher cost has a lower probability of being selected.
 The mutation and crossover procedure operate only inclusively on homerow keys or other keys.
 This limitation is added to keep similar structure to the layout designed using network analysis.
 
