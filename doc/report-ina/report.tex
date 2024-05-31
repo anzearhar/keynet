@@ -7,12 +7,12 @@
 \title{KeyNet: keyboard layout optimization using network analysis and genetic algorithms}
 
 \author[a,1]{Arhar Anže}
-\author[a]{Kostanjšek Kristjan}
+\author[a]{Kostanjšek Kristjan} 
 \author[a]{Ločičnik Nejc}
 
 \affil[a]{University of Ljubljana, Faculty of Computer and Information Science, Ve\v{c}na pot 113, SI-1000 Ljubljana, Slovenia}
 
-\leadauthor{Arhar Anže}
+\leadauthor{Arhar Anže} 
 
 \authordeclaration{All authors contributed equally to this work.}
 \correspondingauthor{\textsuperscript{1}To whom correspondence should be addressed. E-mail: aa3178@student.uni-lj.si.}
@@ -22,7 +22,7 @@ In our report we introduce a novel approach to keyboard layout optimization usin
 We constructed a weighted directed graph based on text samples and used centrality measures to create a baseline layout.
 This initial layout was then optimized with genetic algorithms.
 Evaluations, visualized through heatmaps, highlight the efficiency of our layouts compared to traditional ones like QWERTY and Dvorak.
-While limited to the text of "War and Peace," our framework is adaptable to various text types, offering potential for task-specific optimization.
+While testing was limited to the text of "War and Peace", our framework is adaptable to various text types, offering potential for task-specific optimization.
 Future work would focus on unbiased evaluation methods and user testing to validate real-world effectiveness.
 \end{abstract}
 
@@ -49,10 +49,10 @@ By doing so, we hope to identify layouts that offer superior performance for spe
 Our main contribution is visualized using a key frequency heatmap in Figure \ref{fig:main_contributions}.
 
 \begin{figure}[t]\centering%
-    \includegraphics[width=0.9\linewidth]{fig/qwerty}
+    \includegraphics[width=0.8\linewidth]{fig/qwerty}\\
     \small{QWERTY}
-    \vskip8pt
-    \includegraphics[width=0.9\linewidth]{fig/genetic}\\
+    \vskip5pt
+    \includegraphics[width=0.8\linewidth]{fig/genetic}\\
     \small{Ours}
     \caption{Our finalized keyboard layout compared to the standard QWERTY layout.}
     \label{fig:main_contributions}
@@ -81,29 +81,56 @@ The genetically optimized layout also features better bigram allocation.
 Keys that are most frequently used are positioned together, forming bigram clusters that enable fast typing speeds.
 The least used symbols lie at the edges of the keyboard and at the center two rows, as expected.
 
-\begin{table}[h]\centering%
-	\caption{Table describing data or methods.}
-	\begin{tabular}{lccccc}\toprule
-	    & $n$ & $m$ & $\langle k\rangle$ & $\langle C\rangle$ & $\langle d\rangle$ \\\midrule
-	    Fine network & $438\,920$ & $9\,742\,733$ & $44.4$ & $0.37$ & $6.19$ \\
-	    Random graph & $438\,920$ & $9\,781\,609$ & $44.6$ & $0.00$ & $4.92$ \\\bottomrule
-	\end{tabular}
-	\label{tbl:example}
-\end{table}
-
 \lipsum[2-3]
 
-\begin{figure}[t]\centering%
-    \includegraphics[width=0.9\linewidth]{fig/qwerty}
-    \small{QWERTY}
-    \vskip8pt
-    \includegraphics[width=0.9\linewidth]{fig/dvorak}
+\begin{table}[t]\centering%
+	\caption{Table description. Same finger (SF), same hand (SH).}
+	\begin{tabular}{lccccc}\toprule
+        Layout      & Distance & SF      & SH      & Effort   & Score    \\\midrule
+        Dvorak      & $79.82$  & $57.76$ & $9.47$  & $+0$ \%  & $147.05$ \\
+        Average     & $74.29$  & $72.12$ & $17.52$ & $+11$ \% & $163.92$ \\
+        Eigenvector & $74.25$  & $72.54$ & $17.52$ & $+12$ \% & $164.31$ \\
+        Degree      & $74.58$  & $74.29$ & $17.52$ & $+13$ \% & $166.39$ \\
+        Closeness   & $78.18$  & $72.16$ & $17.52$ & $+14$ \% & $167.85$ \\
+        Betweenness & $77.11$  & $74.17$ & $17.52$ & $+15$ \% & $168.80$ \\
+        Genetic     & $74.85$  & $87.30$ & $22.44$ & $+26$ \% & $184.59$ \\
+        PageRank    & $92.79$  & $82.93$ & $17.52$ & $+31$ \% & $193.23$ \\
+        QWERTY      & $101.84$ & $74.34$ & $22.04$ & $+35$ \% & $198.22$ \\\bottomrule
+	\end{tabular}
+	\label{tbl:scores}
+\end{table}
+
+\lipsum[1]
+
+\begin{figure}[h]\centering%
+	\includegraphics[width=0.5\linewidth]{fig/net}
+	\caption{Network}
+        \label{fig:network}
+\end{figure}
+
+\begin{figure}\centering%
+    \includegraphics[width=0.8\linewidth]{fig/dvorak}\\
     \small{Dvorak}
-    \vskip8pt
-    \includegraphics[width=0.9\linewidth]{fig/centrality}
+    \vskip5pt
+    \includegraphics[width=0.8\linewidth]{fig/degree}\\
     \small{Ours\,(degree centrality)}
-    \vskip8pt
-    \includegraphics[width=0.9\linewidth]{fig/genetic}
+    \vskip5pt
+    \includegraphics[width=0.8\linewidth]{fig/eigenvector}\\
+    \small{Ours\,(eigenvector centrality)}
+    \vskip5pt
+    \includegraphics[width=0.8\linewidth]{fig/betweenness}\\
+    \small{Ours\,(betweeness centrality)}
+    \vskip5pt
+    \includegraphics[width=0.8\linewidth]{fig/closeness}\\
+    \small{Ours\,(closeness centrality)}
+    \vskip5pt
+    \includegraphics[width=0.8\linewidth]{fig/pagerank}\\
+    \small{Ours\,(PageRank)}
+    \vskip5pt
+    \includegraphics[width=0.8\linewidth]{fig/average}\\
+    \small{Ours\,(average rank)}
+    \vskip5pt
+    \includegraphics[width=0.8\linewidth]{fig/genetic}\\
     \small{Ours\,(genetic algorithm)}
     \caption{Keyboard layouts visualized using key frequency heatmaps.}
     \label{fig:layouts}

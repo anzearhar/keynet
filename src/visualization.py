@@ -59,20 +59,40 @@ if __name__ == "__main__":
     # Seaborn
 
     # qwerty
-    keyboard_array = np.array([["q","w","e","r","t","y","u","i","o","p"],
-                               ["a","s","d","f","g","h","j","k","l","-"],
-                               ["z","x","c","v","b","n","m",",",".",":"]])
+    keyboard_array = np.array([["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+                               ["a", "s", "d", "f", "g", "h", "j", "k", "l", "-"],
+                               ["z", "x", "c", "v", "b", "n", "m", ",", ".", ":"]])
     # dvorak
     keyboard_array = np.array([["-", ",", ".", "p", "y", "f", "g", "c", "r", "l"],
                                ["a", "o", "e", "u", "i", "d", "h", "t", "n", "s"],
                                [":", "q", "j", "k", "x", "b", "m", "w", "v", "z"]])
     # degree centrality
-    keyboard_array = np.array([['p','b','l','g',':','z','r','u',',','c'],
-                               ['h','i','n','e','-','j','t','a','o','s'],
-                               ['k','v','m','d','q','x','w','f','.','y']])
+    keyboard_array = np.array([["g", "p", "d", "u", "j", "z", "s", ".", "m", ","],
+                               ["r", "i", "o", "e", "-", "k", "t", "a", "n", "h"],
+                               ["x", "v", "l", "w", "q", ":", "c", "f", "y", "b"]])
+    # eigenvector centrality
+    keyboard_array = np.array([["g", "v", "d", "u", "j", "z", "s", "m", ".", ","],
+                               ["i", "r", "o", "e", "-", "k", "t", "n", "a", "h"],
+                               ["x", "p", "l", "w", "q", ":", "c", "y", "f", "b"]])
+    # betweenness centrality
+    keyboard_array = np.array([["g", "w", "d", "i", "j", ":", "h", "c", "y", ","],
+                               ["o", "r", "u", "e", "q", "k", "a", "t", "s", "n"],
+                               ["x", "v", "l", "p", "-", "z", ".", "m", "f", "b"]])
+    # closeness centrality
+    keyboard_array = np.array([["g", "p", "d", "u", "j", ":", "t", "h", "c", ","],
+                               ["r", "i", "o", "e", "-", "k", "a", "n", "s", "y"],
+                               ["x", "v", "l", "w", "q", "z", ".", "m", "b", "f"]])
+    # pagerank
+    keyboard_array = np.array([["q", "p", "l", "e", "x", "b", "n", ":", "s", "c"],
+                               ["o", "i", "r", "u", "-", "y", ",", "a", "k", "."],
+                               ["v", "g", "w", "d", "j", "f", "t", "z", "h", "m"]])
+    # average
+    keyboard_array = np.array([["g", "v", "d", "u", "j", ":", "h", "m", "c", "y"],
+                               ["i", "r", "o", "e", "-", "b", "a", "n", "t", "s"],
+                               ["x", "p", "l", "w", "q", "z", ".", ",", "k", "f"]])
     # genetic
-    keyboard_array = np.array([[',','y','g','r','q','x','c','m','u','v'],
-                               ['i','n','a','e','j','z','t','h','o','s'],
-                               ['.','p','b','d','-','k','l','w','f',':']])
+    keyboard_array = np.array([[",", "y", "g", "r", "q", "x", "c", "m", "u", "v"],
+                               ["i", "n", "a", "e", "j", "z", "t", "h", "o", "s"],
+                               [".", "p", "b", "d", "-", "k", "l", "w", "f", ":"]])
     #heat = np.random.rand(*keyboard_array.shape)
     visualize_keyboard_seaborn(keyboard_array, store=True)

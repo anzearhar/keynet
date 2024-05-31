@@ -53,19 +53,19 @@ def split_graph(G : nx.DiGraph, df: pd.DataFrame) -> tuple[list, list]:
         w2 = sum_within(G, t2) # recalculate weight sum in subgraph 2
         if diff < abs(w1-w2): # if the balance improved keep the change, otherwise swap back
             swap(t1, t2, r1, r2) # swap back
-    
+
     return t1, t2 # return the nodes of each subgraph
 
 def visualize_split(G : nx.DiGraph, pi : list, dc : list, t1 : list, t2 : list):
     color_map = []
     for node in G:
         if node in t1:
-            color_map.append('red')
+            color_map.append('#404788')
         elif node in t2:
-            color_map.append('blue')
+            color_map.append('#6dcd59')
         else:
             color_map.append('grey')
-        
+
     # Get all edge weights
     weights = np.array([d['weight'] for u, v, d in G.edges(data=True)])
 
@@ -81,7 +81,7 @@ def visualize_split(G : nx.DiGraph, pi : list, dc : list, t1 : list, t2 : list):
     pos = nx.circular_layout(G)  # You can use any layout you prefer
     dt = pd.DataFrame()
     dt['size'] = pi
-    dt['col'] = [0 if c=='red' else 1 for c in color_map]
+    dt['col'] = [0 if c=='#404788' else 1 for c in color_map]
     dt = dt.sort_values(by=['col', 'size'])
     #dt = dt.sort_values(by='col')
     dt['pos'] = list(pos.values())
@@ -92,16 +92,18 @@ def visualize_split(G : nx.DiGraph, pi : list, dc : list, t1 : list, t2 : list):
     edges = [(u, v, (w - min_weight) / (max_weight - min_weight)) for u, v, w in G.edges(data='weight')]
     edges.sort(key=lambda x: x[2])
     # Draw nodes
-    nx.draw_networkx_nodes(G, pos, node_size=pi*10000, node_color=color_map, alpha=0.5)
+    nx.draw_networkx_nodes(G, pos, node_size=pi*10000, node_color=color_map, alpha=0.75, edgecolors="white")
 
     # Draw edges with color intensity based on normalized weights
     for (u, v, d) in edges:
         weight = normalized_weights_dict[(u, v)]
-        nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], width=2, connectionstyle="arc3,rad=0.3", edge_color=plt.cm.Blues(weight))
+        nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], width=1, connectionstyle="arc3,rad=0.3", edge_color=plt.cm.Greys(weight))
 
     # Draw labels
     nx.draw_networkx_labels(G, pos, labels={i: x for i, x in enumerate(dc)})
-    plt.show()
+    plt.axis("off")
+    plt.savefig("net.pdf", format="pdf", bbox_inches="tight")
+    # plt.show()
 
 def check_balance(G : nx.DiGraph, t1 : list, t2 : list):
     """
@@ -121,9 +123,9 @@ def get_target_avoids(pos : tuple, key_array : np.array) -> tuple[list, list]:
     """
     _, l = key_array.shape
     target_nodes = [int(key_array[pos[0]+1, i]) for i in range(l-1) if i != pos[1]]
-    
+
     avoid_node = [int(key_array[pos[0]+1, pos[1]])]
-    
+
     return target_nodes, avoid_node
 
 def calculate_score(G : nx.DiGraph, candidates : list, target_nodes : list, avoid_node : list) -> dict:
@@ -136,10 +138,10 @@ def calculate_score(G : nx.DiGraph, candidates : list, target_nodes : list, avoi
         from_targets = sum(G[node][letter]['weight'] for node in target_nodes if G.has_edge(node, letter))
         to_avoid = sum(G[letter][avoid_node]['weight'] for avoid_node in avoid_node if G.has_edge(letter, avoid_node))
         from_avoid = sum(G[avoid_node][letter]['weight'] for avoid_node in avoid_node if G.has_edge(avoid_node, letter))
-        
+
         score = (to_targets + from_targets) - (to_avoid + from_avoid)
         scores[letter] = score
-        
+
     scores = sorted(scores, key= lambda k: scores.get(k), reverse=True)
     return scores
 
@@ -203,14 +205,14 @@ def determine_key_layout(G : nx.DiGraph, subgraph_nodes : list) -> np.array:
     then the adjacent important keys and finally whatever is left.
     """
     shape = (3, 5)
-    
+
     key_array = np.full(shape, -1) 
     placed = set()
 
     place_important(key_array, subgraph_nodes, placed)
     place_adjacent_important(G, key_array, subgraph_nodes, placed)
     place_least_important(G, key_array, subgraph_nodes, placed)
-    
+
     return key_array
 
 def place_labels(key_array, labels):
@@ -223,7 +225,7 @@ def full_layout(G : nx.DiGraph, metric : Metric, dc : list, pi : list) -> np.arr
 
     # check centrality measures, save to pandas dataframe
     data = construct_dataframe(G, dc)
-    
+
     # split the graph on 2 subgraphs (balanced by amount of weight they hold)
     t1, t2 = split_graph(G, data)
     visualize_split(G, pi, dc, t1, t2)
