@@ -22,7 +22,7 @@ In our report we introduce a novel approach to keyboard layout optimization usin
 We constructed a weighted directed graph based on text samples and used centrality measures to create a baseline layout.
 This initial layout was then optimized with genetic algorithms.
 Evaluations, visualized through heatmaps, highlight the efficiency of our layouts compared to traditional ones like QWERTY and Dvorak.
-While testing was limited to the text of "War and Peace", our framework is adaptable to various text types, offering potential for task-specific optimization.
+While testing was limited to the text of War and Peace, our framework is adaptable to various text types, offering potential for task-specific optimization.
 Future work would focus on unbiased evaluation methods and user testing to validate real-world effectiveness.
 \end{abstract}
 
@@ -71,7 +71,7 @@ Despite this, we believe network analysis can effectively establish a solid foun
 
 \section*{Results}
 
-Figure \ref{fig:layouts} visualizes the key frequency heatmaps for each keyboard layout.
+Figures \ref{fig:main_contributions} and \ref{fig:layouts} visualize the key frequency heatmaps for each keyboard layout.
 As QWERTY was not designed for modern typing needs, the layout is not ergonomic and most used keys are spread across the whole keyboard.
 Dvorak tries to mitigate this by placing most frequent keys on the home row, but ignores the finger strength which is highly tied with typing ergonomics.
 
@@ -81,10 +81,14 @@ The genetically optimized layout also features better bigram allocation.
 Keys that are most frequently used are positioned together, forming bigram clusters that enable fast typing speeds.
 The least used symbols lie at the edges of the keyboard and at the center two rows, as expected.
 
-\lipsum[2-3]
+When comparing our layout with Dvorak and QWERTY, looking purely at the heatmap might be somewhat reasonable since what we want to achieve is the clustering of the commonly used keys, but once we compare different layouts of the same methodology, it becomes very hard to distinguish which layout is better.
+Taking this into consideration, we decided to evaluate our layouts on an online keyboard layout analyzer \href{https://klanext.keyboard-design.com/#/main}{KLAnext v0.06}.
+The optimal layout score is based on a weighed calculation that factors in the distance your fingers moved (40 \%), same finger bigrams (40 \%) and hand alternation (20 \%) while typing.
+Lower scores are better and mean that less effort will be used during typing.
+The layouts were built with the text of War \& Peace by Tolstoy and were evaluated on the text of Romeo \& Juliet by Shakespeare, which is much shorter, but has a similar distribution of character occurrence. 
 
 \begin{table}[t]\centering%
-	\caption{Table description. Same finger (SF), same hand (SH).}
+	\caption{Layout testing results. Same finger (SF), same hand (SH).}
 	\begin{tabular}{lccccc}\toprule
         Layout      & Distance & SF      & SH      & Effort   & Score    \\\midrule
         Dvorak      & $79.82$  & $57.76$ & $9.47$  & $+0$ \%  & $147.05$ \\
@@ -100,13 +104,19 @@ The least used symbols lie at the edges of the keyboard and at the center two ro
 	\label{tbl:scores}
 \end{table}
 
-\lipsum[1]
+The used layouts are shown in Figure \ref{fig:layouts} and the results are shown in Table \ref{tbl:scores}.
+The layouts that used centrality measures used the same hand split, which can be seen in the unchanged score in the same hand column in the table.
+Looking at the layouts, we can see that changing the metric only made minor differences in the home row, which then also affected the surrounding layout.
+This is because of the nature of our network.
+These metrics have a hard time differentiating important nodes in a fully connected graph.
+Consequently, the score differences are then also minor.
+The best performing layout was the one that averaged the node importance rank from the other metrics, followed by eigenvector centrality, degree centrality, closeness centrality, betweenness centrality, the genetic optimization and finally the one using PageRank.
+All of our layouts beat the QWERTY layout, with PageRank being a clear outlier and the worst performer.
 
-\begin{figure}[h]\centering%
-	\includegraphics[width=0.5\linewidth]{fig/net}
-	\caption{Network}
-        \label{fig:network}
-\end{figure}
+We can split the methods into 3 groups: metrics related to node degrees (degree and eigenvector centrality), metrics related to graph pathways (betweenness and closeness centrality) and hybrid metrics, that make we can say are related to both node degrees and graph pathways (PageRank).
+We expected the first group to perform better, since its directly related to how we split the nodes into two subgraphs and how we placed the less important keys on the layout.
+We were unsure about how the second group would perform since looking at pathways in a fully connected graph seems meaningless, but it worked out fine since the edges are weighted.
+PageRank's bad performance was expected, since the structure of our network is very different than what the PageRank algorithm was designed for (sparse, scale-free, web-like graphs).
 
 \begin{figure}\centering%
     \includegraphics[width=0.8\linewidth]{fig/dvorak}\\
@@ -136,7 +146,17 @@ The least used symbols lie at the edges of the keyboard and at the center two ro
     \label{fig:layouts}
 \end{figure}
 
-\lipsum[4-6]
+The other layout that performed poorly is the one that was designed with a genetic algorithm.
+We think that the main reason for that is that we didn't include enough constraints.
+If we look at it's scores, it performed well on distance, but performed poorly on same finger and same hand metrics.
+We constricted the key swaps only to rows, so that it wouldn't fully ruin the base layout provided with network analysis metrics.
+If we also constricted it to half the keyboard, the same hand score would be much better.
+The same finger scoring was included into the algorithms cost function, so that only needs to be further refined using importance weights.
+
+We evaluated these results while only looking at a single text input.
+The layout analyzer that we used required manual placements of keys so we ran out of time for more robust testing.
+Both the base layout (the hand split part) and the genetic optimization have a certain degree of randomness.
+More robust testing would probably provide better results and allow us to further refine our methods.
 
 \section*{Discussion}
 
@@ -195,11 +215,18 @@ Ideally, we want bigrams to be typed interchangeably with both hands, meaning we
 We can achieve this by trying to balance the sum of inner weights of the two subgraphs.
 We got an approximation of this by splitting the nodes based on the weighted degree centrality.
 The split was made interchangeably between the two subgraphs, e.g. node with the highest degree centrality in subgraph 1, node with second highest degree centrality in subgraph 2, 3rd node in subgraph 1 again, etc.
-
 This approximation is then optimized by randomly swapping the nodes between the two subgraphs.
 If the node swap leads to an improvement in the balance, we keep it, otherwise we swap the nodes back.
 
 This optimization always converges, so that we have approximately a quarter of the weights within the internal connections of each subgraphs and approximately half of the weights within the edges connecting the two subgraphs.
+The visualization of the graph and its balanced bisection are shown in Figure \ref{fig:network}.
+This graph split was also used to design layouts displayed in Figure \ref{fig:layouts}.
+
+\begin{figure}[h]\centering%
+    \includegraphics[width=0.75\linewidth]{fig/net}
+    \caption{Graph visualization}
+    \label{fig:network}
+\end{figure}
 
 \subsubsection*{Base layout}
 
